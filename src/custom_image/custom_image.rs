@@ -1,7 +1,12 @@
 use image::io::Reader as ImageReader;
 use image::DynamicImage;
 
-pub trait ImageFilter {}
+use crate::filters;
+
+pub trait ImageFilter {
+    fn quantize(img: &mut DynamicImage, level: u8) -> DynamicImage;
+    fn quantize_rgb(img: &mut DynamicImage, level: u8) -> DynamicImage;
+}
 
 pub struct CustomImage {
     pub internal_image: DynamicImage,
@@ -25,5 +30,15 @@ impl CustomImage {
             filename,
             full_path,
         }
+    }
+}
+
+impl ImageFilter for CustomImage {
+    fn quantize(img: &mut DynamicImage, level: u8) -> DynamicImage {
+        filters::quantize_n_levels::run(img, level)
+    }
+
+    fn quantize_rgb(img: &mut DynamicImage, level: u8) -> DynamicImage {
+        filters::quantize_n_levels_rgb::run(img, level)
     }
 }
