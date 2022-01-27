@@ -17,7 +17,7 @@ impl CustomImage {
             path.trim_end_matches("/"),
             filename.trim_start_matches("/")
         );
-        let internal_image = ImageReader::open(full_path).unwrap().decode().unwrap();
+        let internal_image = ImageReader::open(&full_path).unwrap().decode().unwrap();
 
         CustomImage {
             internal_image,

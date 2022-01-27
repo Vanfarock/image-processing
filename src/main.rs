@@ -11,8 +11,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut current_folder = env::current_dir()?;
     current_folder.push("src\\assets\\");
 
-    let path = current_folder.to_str().unwrap().to_string();
-    let filename = "image1.jpg".to_string();
+    let path = current_folder.to_str().unwrap().to_owned();
+    let filename = "image1.jpg".to_owned();
 
     let custom_image = CustomImage::new(path, filename);
 
