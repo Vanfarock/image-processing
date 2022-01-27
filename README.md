@@ -7,5 +7,6 @@ The purpose of this repository is learning image processing while learning rustl
 - [X] Floyd-Steinberg dithering
 - [X] Nearest neighbors pixelization
 - [X] Brightness change
+- [X] Average blur
 - [ ] Gaussian blur
 - [ ] Canny edge detection
