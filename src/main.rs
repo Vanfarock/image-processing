@@ -1,8 +1,6 @@
 use std::{env, error::Error};
 
-use image::io::Reader as ImageReader;
-
-use crate::{custom_image::custom_image::CustomImage, filters::floyd_steinberg};
+use crate::custom_image::custom_image::ImageFilter;
 
 mod custom_image;
 mod filters;
