@@ -1,6 +1,6 @@
 use std::{env, error::Error};
 
-use crate::custom_image::custom_image::ImageFilter;
+use crate::custom_image::custom_image::CustomImage;
 
 mod custom_image;
 mod filters;

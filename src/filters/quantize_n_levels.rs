@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImage, GenericImageView};
+use image::{DynamicImage, GenericImageView};
 
 use crate::pixel_algorithms::quantize::quantize;
 
