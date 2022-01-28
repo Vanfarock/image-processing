@@ -1,9 +1,9 @@
-use image::{DynamicImage, GenericImageView};
+use image::{DynamicImage, GenericImage, GenericImageView};
 
 use crate::pixel_algorithms::quantize::quantize_rgb;
 
 pub fn run(base_img: &mut DynamicImage, level: u8) -> DynamicImage {
-    let img = base_img.clone();
+    let img = &mut base_img.clone();
     let (width, height) = img.dimensions();
 
     for x in 0..width {
@@ -18,7 +18,9 @@ pub fn run(base_img: &mut DynamicImage, level: u8) -> DynamicImage {
             channels[0] = q_red;
             channels[1] = q_green;
             channels[2] = q_blue;
+
+            img.put_pixel(x, y, pixel);
         }
     }
-    img
+    img.clone()
 }

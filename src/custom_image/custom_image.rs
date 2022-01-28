@@ -4,15 +4,12 @@ use image::DynamicImage;
 use crate::filters;
 
 pub trait ImageFilter {
-    fn quantize(img: &mut DynamicImage, level: u8) -> DynamicImage;
-    fn quantize_rgb(img: &mut DynamicImage, level: u8) -> DynamicImage;
+    fn quantize(&mut self, level: u8) -> DynamicImage;
+    fn quantize_rgb(&mut self, level: u8) -> DynamicImage;
 }
 
 pub struct CustomImage {
     pub internal_image: DynamicImage,
-    pub path: String,
-    pub filename: String,
-    pub full_path: String,
 }
 
 impl CustomImage {
@@ -26,19 +23,16 @@ impl CustomImage {
 
         CustomImage {
             internal_image,
-            path,
-            filename,
-            full_path,
         }
     }
 }
 
 impl ImageFilter for CustomImage {
-    fn quantize(img: &mut DynamicImage, level: u8) -> DynamicImage {
-        filters::quantize_n_levels::run(img, level)
+    fn quantize(&mut self, level: u8) -> DynamicImage {
+        filters::quantize_n_levels::run(&mut self.internal_image, level)
     }
 
-    fn quantize_rgb(img: &mut DynamicImage, level: u8) -> DynamicImage {
-        filters::quantize_n_levels_rgb::run(img, level)
+    fn quantize_rgb(&mut self, level: u8) -> DynamicImage {
+        filters::quantize_n_levels_rgb::run(&mut self.internal_image, level)
     }
 }
