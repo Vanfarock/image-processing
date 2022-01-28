@@ -1,10 +1,10 @@
-use std::{error::Error};
-
 use image::{DynamicImage, GenericImageView, GenericImage};
 
-pub fn run(img: &mut DynamicImage, path: &str, mut brightness: f32) -> Result<(), Box<dyn Error>> {
-    if brightness > 100.0 { brightness = 100.0; }
+use crate::custom_image::custom_image::{ImageFilter, CustomImage};
+use crate::pixel_algorithms::brightness::brighten;
 
+pub fn run(base_img: &mut DynamicImage, brightness: f32) -> Box<dyn ImageFilter> {
+    let img = &mut base_img.clone();
     let (width, height) = img.dimensions();
 
     for x in 0..width {
@@ -13,15 +13,14 @@ pub fn run(img: &mut DynamicImage, path: &str, mut brightness: f32) -> Result<()
 
             let channels = &mut pixel.0;
             
-            channels[0] = (channels[0] as f32 * (brightness as f32 / 100.0)) as u8;
-            channels[1] = (channels[1] as f32 * (brightness as f32 / 100.0)) as u8;
-            channels[2] = (channels[2] as f32 * (brightness as f32 / 100.0)) as u8;
+            let (b_red, b_green, b_blue) = brighten(channels[0],channels[1], channels[2], brightness);
+
+            channels[0] = b_red;
+            channels[1] = b_green;
+            channels[2] = b_blue;
 
             img.put_pixel(x, y, pixel);
         }
     }
-
-    img.save(path.to_string() + "image1-brightness-" + &brightness.to_string() + ".png")?;
-
-    Ok(())
+    Box::new(CustomImage::from(img.clone()))
 }

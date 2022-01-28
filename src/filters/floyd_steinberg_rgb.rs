@@ -1,8 +1,10 @@
-use std::error::Error;
-
 use image::{DynamicImage, GenericImageView, GenericImage};
 
-pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<dyn Error>> {
+use crate::custom_image::custom_image::{ImageFilter, CustomImage};
+use crate::pixel_algorithms::quantize::quantize_rgb;
+
+pub fn run(base_img: &mut DynamicImage, level: u8) -> Box<dyn ImageFilter> {
+    let img = base_img;
     let (width, height) = img.dimensions();
 
     for y in 0..height {
@@ -12,7 +14,7 @@ pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<
             let channels = &mut pixel.0;
             
             let (old_red, old_green, old_blue) = (channels[0], channels[1], channels[2]);
-            let (d_red, d_green, d_blue) = quantize(channels[0], channels[1], channels[2], level);
+            let (d_red, d_green, d_blue) = quantize_rgb(channels[0], channels[1], channels[2], level);
             
             channels[0] = d_red;
             channels[1] = d_green;
@@ -24,29 +26,10 @@ pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<
                 old_red as i16 - d_red as i16,
                 old_green as i16 - d_green as i16,
                 old_blue as i16 - d_blue as i16);
-            distribute_error_diffusion(&mut img, error, x, y);
+            distribute_error_diffusion(img, error, x, y);
         }
     }
-
-    img.save(path.to_string() + "image1-floyd-steinberg-rgb.png")?;
-
-    Ok(())
-}
-
-fn quantize(red: u8, green: u8, blue: u8, level: u8) -> (u8, u8, u8) {
-    let level_size = 255 / level;
-    
-    let red_level = red / level_size;
-    let green_level = green / level_size;
-    let blue_level = blue / level_size;
-
-    let chunk_size = if level <= 1 { 0.0 } else { 255.0 / (level - 1) as f32 };
-    
-    let quantized_red = (red_level as f32 * chunk_size) as u8;
-    let quantized_green = (green_level as f32 * chunk_size) as u8;
-    let quantized_blue = (blue_level as f32 * chunk_size) as u8;
-
-    (quantized_red, quantized_green, quantized_blue)
+    Box::new(CustomImage::from(img.clone()))
 }
 
 fn distribute_error_diffusion(img: &mut DynamicImage, errors: (i16, i16, i16), x: u32, y: u32) {

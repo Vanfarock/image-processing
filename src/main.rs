@@ -1,6 +1,6 @@
 use std::{env, error::Error};
 
-use crate::custom_image::custom_image::{CustomImage, ImageFilter};
+use crate::custom_image::custom_image::{ImageFilter, CustomImage};
 
 mod custom_image;
 mod filters;
@@ -14,8 +14,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let filename = "image1.jpg".to_owned();
 
     let image = &mut CustomImage::new(path.to_owned(), filename);
-    image.quantize(2).save(path.to_owned() + "quantize.png").unwrap();
-    image.quantize_rgb(2).save(path.to_owned() + "quantize_rgb.png").unwrap();
+    image.pixelize(10).quantize(2).save(path.to_owned() + "test.png").unwrap();
+    image.quantize(2).pixelize(10).save(path.to_owned() + "test2.png").unwrap();
 
     println!("Finished!");
 

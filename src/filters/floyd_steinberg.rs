@@ -1,8 +1,10 @@
-use std::error::Error;
-
 use image::{DynamicImage, GenericImageView, GenericImage};
 
-pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<dyn Error>> {
+use crate::custom_image::custom_image::{ImageFilter, CustomImage};
+use crate::pixel_algorithms::quantize::quantize;
+
+pub fn run(base_img: &mut DynamicImage, level: u8) -> Box<dyn ImageFilter> {
+    let img = base_img;
     let (width, height) = img.dimensions();
 
     for y in 0..height {
@@ -12,7 +14,6 @@ pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<
             let channels = &mut pixel.0;
             
             let pixel_average = ((channels[0] as f32 + channels[1] as f32 + channels[2] as f32) / 3.0) as u8;
-            // println!("First pixel: {} - {} - {}", channels[0], channels[1], channels[2]);
             let dithered_value = quantize(channels[0], channels[1], channels[2], level);
             
             channels[0] = dithered_value;
@@ -21,38 +22,11 @@ pub fn run(mut img: &mut DynamicImage, path: &str, level: u8) -> Result<(), Box<
             
             img.put_pixel(x, y, pixel);
 
-            // let mut bla = img.get_pixel(x + 1, y);
-            // let a = &mut bla.0;
-            // println!("Second pixel: {} - {} - {}", a[0], a[1], a[2]);
-
             let error = (pixel_average as i16) - (dithered_value as i16);
-            // println!("Error: {}", error);
-            distribute_error_diffusion(&mut img, error, x, y);
-
-            // let mut bla2 = img.get_pixel(x + 1, y);
-            // let a2 = &mut bla2.0;
-            // println!("Second pixel: {} - {} - {}", a2[0], a2[1], a2[2]);
-
-            // break;
+            distribute_error_diffusion(img, error, x, y);
         }
-        // break;
     }
-
-    img.save(path.to_string() + "image1-floyd-steinberg.png")?;
-
-    Ok(())
-}
-
-fn quantize(red: u8, green: u8, blue: u8, level: u8) -> u8 {
-    let gray_level_size = 255 / (level as u32);
-    
-    let average = (red as f32 + green as f32 + blue as f32) / 3.0;
-
-    let gray_level = average as u32 / gray_level_size;
-
-    let chunk_size = if level <= 1 { 0.0 } else { 255.0 / (level - 1) as f32 };
-    
-    (gray_level as f32 * chunk_size) as u8
+    Box::new(CustomImage::from(img.clone()))
 }
 
 fn distribute_error_diffusion(img: &mut DynamicImage, error: i16, x: u32, y: u32) {
@@ -90,7 +64,6 @@ fn distribute_error_diffusion(img: &mut DynamicImage, error: i16, x: u32, y: u32
 }
 
 fn add_and_clamp(value: i16, other_value: i16, min: u8, max: u8) -> u8 {
-    // println!("Value: {} - Other value: {}", value, other_value);
     match value.checked_add(other_value) {
         Some(result) =>  {
             if value + other_value < 0 { min }
