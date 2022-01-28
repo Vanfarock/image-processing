@@ -17,7 +17,7 @@ pub fn run(img: &mut DynamicImage, path: &str, radius: u8) -> Result<(), Box<dyn
             channels[1] = green;
             channels[2] = blue;
             
-            img.put_pixel(x, y, pixel);
+            img.put_pixel(x, y, pixel); 
         }
     }
 

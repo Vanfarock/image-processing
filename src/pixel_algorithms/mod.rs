@@ -1,2 +1,3 @@
 pub mod brightness;
-pub mod quantize;
+pub mod convolution;
+pub mod quantization;
