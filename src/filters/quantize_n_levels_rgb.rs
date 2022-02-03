@@ -1,6 +1,6 @@
 use image::{DynamicImage, GenericImage, GenericImageView};
 
-use crate::custom_image::custom_image::{ImageFilter, CustomImage};
+use crate::custom_image::custom_image::{CustomImage, ImageFilter};
 use crate::pixel_algorithms::quantization::quantize_rgb;
 
 pub fn run(base_img: &mut DynamicImage, level: u8) -> Box<dyn ImageFilter> {

@@ -1,7 +1,8 @@
 use std::{env, error::Error};
 
-use crate::custom_image::custom_image::{ImageFilter, CustomImage};
+use crate::custom_image::custom_image::{CustomImage, ImageFilter};
 
+mod blur;
 mod custom_image;
 mod filters;
 mod pixel_algorithms;
@@ -13,9 +14,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let path = current_folder.to_str().unwrap();
     let filename = "image1.jpg".to_owned();
 
+    // let bla = blur::kernel::get_gaussian_kernel((3, 3), 1.0);
+    // println!("{:#?}", bla);
     let image = &mut CustomImage::new(path.to_owned(), filename);
-    image.pixelize(10).quantize(2).save(path.to_owned() + "test.png").unwrap();
-    image.quantize(2).pixelize(10).save(path.to_owned() + "test2.png").unwrap();
+
+    image
+        .gaussian_blur((10, 10), 5.0)
+        .save(path.to_owned() + "bla.png")
+        .unwrap();
 
     println!("Finished!");
 

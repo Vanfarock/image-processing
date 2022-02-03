@@ -14,7 +14,12 @@ pub trait ImageFilter: Image {
     fn floyd_steinberg(&mut self, level: u8) -> Box<dyn ImageFilter>;
     fn floyd_steinberg_rgb(&mut self, level: u8) -> Box<dyn ImageFilter>;
     fn pixelize(&mut self, step_size: usize) -> Box<dyn ImageFilter>;
-    // fn average_blur(&mut self, radius: u32) -> Box<dyn ImageFilter>;
+    fn average_blur(&mut self, kernel_size: (u32, u32)) -> Box<dyn ImageFilter>;
+    fn gaussian_blur(
+        &mut self,
+        kernel_size: (u32, u32),
+        standard_deviation: f32,
+    ) -> Box<dyn ImageFilter>;
 }
 
 pub struct CustomImage {
@@ -30,9 +35,7 @@ impl CustomImage {
         );
         let internal_image = ImageReader::open(&full_path).unwrap().decode().unwrap();
 
-        CustomImage {
-            internal_image,
-        }
+        CustomImage { internal_image }
     }
 
     pub fn from(img: DynamicImage) -> Self {
@@ -71,5 +74,21 @@ impl ImageFilter for CustomImage {
 
     fn pixelize(&mut self, step_size: usize) -> Box<dyn ImageFilter> {
         filters::pixelize::run(&mut self.internal_image.clone(), step_size)
+    }
+
+    fn average_blur(&mut self, kernel_size: (u32, u32)) -> Box<dyn ImageFilter> {
+        filters::average_blur::run(&mut self.internal_image.clone(), kernel_size)
+    }
+
+    fn gaussian_blur(
+        &mut self,
+        kernel_size: (u32, u32),
+        standard_deviation: f32,
+    ) -> Box<dyn ImageFilter> {
+        filters::gaussian_blur::run(
+            &mut self.internal_image.clone(),
+            kernel_size,
+            standard_deviation,
+        )
     }
 }
